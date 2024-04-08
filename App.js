@@ -1,5 +1,4 @@
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import React from "react";
 import { Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -13,6 +12,7 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar />
       <NavigationContainer>
         <Tab.Navigator
           screenOptions={({ route }) => ({
