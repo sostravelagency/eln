@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableHighlight, View } from "react-native";
 import Header from "../component/Header/Header";
-import get_categories_list from "../api/get/get_categories_list";
 import CourseListCourse from "../component/Course/CourseList";
+import get_categories_list from "../api/get/get_categories_list";
 
-const Course = () => {
+const SearchScreen = () => {
   const [categories, setCategories] = useState([]);
   const [course, setCourse] = useState([]);
   const [currentCategories, setCurrentCategories] = useState(0);
@@ -74,4 +74,4 @@ const Course = () => {
   );
 };
 
-export default Course;
+export default SearchScreen;

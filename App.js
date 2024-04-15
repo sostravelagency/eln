@@ -1,58 +1,65 @@
 import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
-import React from "react";
-import { Button } from "react-native";
+import React, { createContext, useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
+import { ThemeProvider } from "@rneui/themed";
 import { createStackNavigator } from "@react-navigation/stack";
-import HomeScreen from "./app/screen/HomeScreen";
-import Icon from "react-native-vector-icons/Entypo";
-import Course from "./app/screen/Course";
+import WrapTab from "./app/tab/WrapTab";
+import LoginScreen from "./app/screen/Login";
+import RegisterScreen from "./app/screen/Register";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import get_me from "./app/api/get/me";
+import { LogBox } from 'react-native';
+import DetailCourse from "./app/screen/DetailCourse";
+import CourseAccess from "./app/screen/CourseAccess";
 
-const Tab = createBottomTabNavigator();
+LogBox.ignoreLogs(['WARN  Require cycle: App.js']);
+
+const Stack = createStackNavigator();
+
+export const AppContext = createContext();
 export default function App() {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar />
-      <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, size }) => {
-              let iconName;
-              let color;
-              if (route.name === "Home") {
-                iconName = focused ? "home" : "home";
-                color= focused ? "#2e89ff" : "#555"
-              } else if (route.name === "Course") {
-                iconName = focused ? "drive" : "drive";
-                color= focused ? "#2e89ff" : "#555"
-              }
-              else if (route.name === "About") {
-                iconName = focused ? "shield" : "shield";
-                color= focused ? "#2e89ff" : "#555"
-              }
+  const [auth, setAuth] = useState(false);
+  const [user, setUser] = useState();
+  useEffect(() => {
+    checkToken();
+  }, []);
+  const checkToken = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('accessToken');
+      const result= await get_me(userToken)
+      if(result.success=== true) {
+        setAuth(true)
+        setUser(result.user)
+      }
 
-              return <Icon name={iconName} size={size} color={color} />;
-            },
-          })}
-        >
-          <Tab.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{ headerShown: false }}
-          />
-          <Tab.Screen
-            name="Course"
-            component={Course}
-            options={{ headerShown: false }}
-          />
-          <Tab.Screen
-            name="About"
-            component={Course}
-            options={{ headerShown: false }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+    } catch (error) {
+      console.error('Error retrieving token:', error);
+      setAuth(false)
+      
+    }
+  };
+  return (
+    <AppContext.Provider value={{ auth, user, setAuth, setUser }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar />
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="WrapTab" component={WrapTab} />
+            <Stack.Screen name="DetailCourse" component={DetailCourse} />
+            <Stack.Screen name="CourseAccess" component={CourseAccess} />
+            {
+              auth=== false &&
+              <>
+                <Stack.Screen name="Login" component={LoginScreen} />
+                <Stack.Screen name="Register" component={RegisterScreen} />
+              </>
+            }
+            {/* <Stack.Screen name="Notifications" component={Notifications} /> */}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaView>
+    </AppContext.Provider>
   );
 }
 
