@@ -12,13 +12,11 @@ import { Rating } from "react-native-ratings";
 import Icon from "react-native-vector-icons/Ionicons";
 import Item from "../component/DetailCourse/Item";
 import ItemReview from "../component/DetailCourse/ItemReview";
-import { useStripe } from '@stripe/stripe-react-native';
 import { AppContext } from "../../App";
 
 const DetailCourse = () => {
   const navigation= useNavigation()
   const {auth }= useContext(AppContext)
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [data, setData] = useState();
   const params = useRoute().params;
   const courseId = params.courseId;
@@ -33,13 +31,7 @@ const DetailCourse = () => {
 
   const handleClick= async ()=> {
     if(auth=== true) {
-      const { error } = await initPaymentSheet({
-        paymentIntentClientSecret: 'pk_test_51KuWAjDq3U6SJ691wGf9YHe0wZC0O51ddczJ4oSBnGTwYgx9VZW4s1GIie1jWY4TiLHoEzuPzdQqtalMuA9twxoS00wCLbL1O7',
-      });
-  
-      if (error) {
-        console.error('Lỗi khởi tạo PaymentSheet:', error);
-      }
+     
     }
     else {
       navigation.navigate("Login", {from: "DetailCourse", courseId})

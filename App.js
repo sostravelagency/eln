@@ -12,6 +12,7 @@ import get_me from "./app/api/get/me";
 import { LogBox } from 'react-native';
 import DetailCourse from "./app/screen/DetailCourse";
 import CourseAccess from "./app/screen/CourseAccess";
+import OTPScreen from "./app/screen/OTP";
 
 LogBox.ignoreLogs(['WARN  Require cycle: App.js']);
 
@@ -53,6 +54,7 @@ export default function App() {
               <>
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Register" component={RegisterScreen} />
+                <Stack.Screen name="OTP" component={OTPScreen} />
               </>
             }
             {/* <Stack.Screen name="Notifications" component={Notifications} /> */}

@@ -1,9 +1,9 @@
 import axios from "axios"
 import { API_URL } from "../../config"
 
-const signup= async (data)=> {
+const activation= async (data)=> {
     const res= await axios({
-        url: API_URL + "/registration",
+        url: API_URL + "/activate-user",
         method: 'post',
         data: {
             ...data
@@ -13,4 +13,4 @@ const signup= async (data)=> {
     return result
 }
 
-export default signup
+export default activation

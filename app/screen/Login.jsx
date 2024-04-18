@@ -1,9 +1,18 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import login from "../api/post/login";
 import { AppContext } from "../../App";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as WebBrowser from "expo-web-browser";
+import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
+WebBrowser.maybeCompleteAuthSession();
+const discovery = {
+  authorizationEndpoint: "https://github.com/login/oauth/authorize",
+  tokenEndpoint: "https://github.com/login/oauth/access_token",
+  revocationEndpoint:
+    "https://github.com/settings/connections/applications/ccf750727d23af944b7e",
+};
 
 const LoginScreen = () => {
   const route = useRoute();
@@ -14,7 +23,22 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: "ccf750727d23af944b7e",
+      scopes: ["identity"],
+      redirectUri: makeRedirectUri({
+        scheme: "com.ptr.ler",
+      }),
+    },
+    discovery
+  );
 
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { code } = response.params;
+    }
+  }, [response]);
   const handleLogin = async () => {
     setEmailError("");
     setPasswordError("");
@@ -45,9 +69,8 @@ const LoginScreen = () => {
           } else {
             navigation.navigate(from, { courseId });
           }
-        }
-        else {
-            navigation.navigate(from, { courseId });
+        } else {
+          navigation.navigate(from, { courseId });
         }
       } else {
         navigation.navigate("Home");
@@ -56,7 +79,7 @@ const LoginScreen = () => {
       const { data } = error.response;
       setAuth(false);
       setUser();
-      Alert.alert("Account or password is not correct")
+      Alert.alert("Account or password is not correct");
     }
   };
 
@@ -82,6 +105,8 @@ const LoginScreen = () => {
         <Text style={styles.errorText}>{passwordError}</Text>
       ) : null}
       <Button title="Login" onPress={handleLogin} />
+      <Button title="Login with google" onPress={handleLogin} />
+      <Button disabled={!request} title="Login with github" onPress={promptAsync} />
       <Text
         style={styles.registerText}
         onPress={() => navigation.navigate("Register")}

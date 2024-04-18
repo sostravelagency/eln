@@ -8,12 +8,6 @@
     "userInterfaceStyle": "light",
     "plugins": [
       [
-        "@stripe/stripe-react-native",
-        {
-          "enableGooglePay": false
-        }
-      ],
-      [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
@@ -25,18 +19,26 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ptr.ler"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.ptr.ler"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+     "scheme": "com.ptr.ler"
   }
 }
