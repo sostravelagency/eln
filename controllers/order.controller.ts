@@ -155,3 +155,35 @@ export const newPayment = CatchAsyncError(
     }
   }
 );
+
+export const newPaymentApp= async (req: Request, res: Response) => {
+  try {
+    const { amount, name } = req.body;
+
+    // Tạo Session trên Stripe để tạo link thanh toán
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: "USD",
+            product_data: {
+              name: name, 
+            },
+            unit_amount: amount, 
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: 'http://localhost:3000/payment-success', 
+      cancel_url: 'http://localhost:3000/payment-cancel', 
+    });
+
+ 
+    res.json({ session: session });
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
+    res.status(500).json({ error: 'Could not create checkout session' });
+  }
+};
