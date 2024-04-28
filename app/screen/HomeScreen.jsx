@@ -17,7 +17,7 @@ const HomeScreen = () => {
         <Image source={{uri: "https://res.cloudinary.com/cockbook/image/upload/v1712546859/single/banner-img-2_zywejk.webp"}} style={{width: 300, height: 350, objectFit: "contain"}} />
       </View>
       <View style={{display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 24, padding: 10}}>
-        <Text style={{fontSize: 32, fontWeight: "600", textAlign: "center", marginBottom: 12}}>Improve Your Online</Text>
+        <Text onPress={()=> navigation.navigate("Login", {from: "Home"})} style={{fontSize: 32, fontWeight: "600", textAlign: "center", marginBottom: 12}}>Improve Your Online</Text>
         <Text style={{fontSize: 32, fontWeight: "600", textAlign: "center", marginBottom: 12}}>Learning Experience Better</Text>
         <Text style={{fontSize: 32, fontWeight: "600", textAlign: "center", marginBottom: 12}}>Instantly</Text>
       </View>

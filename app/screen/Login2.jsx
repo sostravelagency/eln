@@ -18,7 +18,6 @@ import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import firebase from "firebase/app";
 import "firebase/auth";
 import firebaseConfig from "../firebase";
-import login_social from "../api/post/login-social";
 WebBrowser.maybeCompleteAuthSession();
 if (Platform.OS === "web") {
   WebBrowser.maybeCompleteAuthSession();
@@ -48,7 +47,7 @@ const LoginScreen = () => {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: "Iv1.9180de2537df9b10",
-      scopes: ['user:email'],
+      scopes: ["identity", "user:email", "user:follow"],
       redirectUri: makeRedirectUri(),
     },
     discovery
@@ -73,8 +72,6 @@ const LoginScreen = () => {
         const data= await response.json()
         const userInfo= await getUserInfo(data.access_token)
         console.log("user info", userInfo)
-      const result = await login_social({ email, password });
-        
         return response
         
       };
@@ -90,43 +87,8 @@ const LoginScreen = () => {
         "X-GitHub-Api-Version": "2022-11-28"
       },
     });
-    const response2 = await fetch('https://api.github.com/user/emails', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "X-GitHub-Api-Version": "2022-11-28"
-      },
-    });
-    const emailData= await response2.json()
+  
     const userData = await response.json();
-    try {
-      const result = await login_social({ email: emailData[0].email, avatar: userData.avatar_url, name: userData.login });
-      const data = result;
-      setUser(data?.user);
-      setAuth(true);
-      await AsyncStorage.setItem("accessToken", data.accessToken);
-      await AsyncStorage.setItem("user", JSON.stringify(data.user));
-      if (from) {
-        if (from === "DetailCourse") {
-          const isPurchased = data.user.courses.find(
-            (item) => item._id === courseId
-          );
-          if (isPurchased) {
-            navigation.navigate("CourseAccess", { courseId });
-          } else {
-            navigation.navigate(from, { courseId });
-          }
-        } else {
-          navigation.navigate(from, { courseId });
-        }
-      } else {
-        navigation.navigate("Home");
-      }
-    } catch (error) {
-      const { data } = error.response;
-      setAuth(false);
-      setUser();
-      Alert.alert("Account or password is not correct");
-    }
     return userData;
   };
 

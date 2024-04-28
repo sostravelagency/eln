@@ -38,10 +38,11 @@ elsif podfile_properties.key?('ios.flipper') then
 end
 
 target 'eln1' do
-  use_modular_headers!
   use_expo_modules!
+  use_modular_headers!
   config = use_native_modules!
-
+  pod 'GoogleSignIn'
+  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => true
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 

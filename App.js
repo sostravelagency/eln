@@ -13,6 +13,7 @@ import { LogBox } from 'react-native';
 import DetailCourse from "./app/screen/DetailCourse";
 import CourseAccess from "./app/screen/CourseAccess";
 import OTPScreen from "./app/screen/OTP";
+import PaymentScreen from "./app/screen/PaymentScreen";
 
 LogBox.ignoreLogs(['WARN  Require cycle: App.js']);
 
@@ -47,8 +48,9 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="WrapTab" component={WrapTab} />
-            <Stack.Screen name="DetailCourse" component={DetailCourse} />
+            <Stack.Screen name="DetailCourse" component={user?.role=== "admin" ? CourseAccess : DetailCourse} />
             <Stack.Screen name="CourseAccess" component={CourseAccess} />
+            <Stack.Screen name="Payment" component={PaymentScreen} />
             {
               auth=== false &&
               <>

@@ -2,6 +2,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Image,
+  Linking,
   ScrollView,
   Text,
   TouchableHighlight,
@@ -13,14 +14,26 @@ import Icon from "react-native-vector-icons/Ionicons";
 import Item from "../component/DetailCourse/Item";
 import ItemReview from "../component/DetailCourse/ItemReview";
 import { AppContext } from "../../App";
-
+import { loadStripe } from "@stripe/stripe-js";
+import { API_URL } from "../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+const stripePromise = loadStripe(
+  "pk_test_51KuWAjDq3U6SJ691wGf9YHe0wZC0O51ddczJ4oSBnGTwYgx9VZW4s1GIie1jWY4TiLHoEzuPzdQqtalMuA9twxoS00wCLbL1O7"
+);
 const DetailCourse = () => {
-  const navigation= useNavigation()
-  const {auth }= useContext(AppContext)
+  const navigation = useNavigation();
+  const { auth, user } = useContext(AppContext);
+  console.log("user111", user)
   const [data, setData] = useState();
   const params = useRoute().params;
   const courseId = params.courseId;
-  
+  const purchase= params?.purchase
+  useEffect(()=> {
+    if(purchase=== true) {
+      navigation.navigate("CourseAccess", {courseId})
+    }
+  }, [purchase])
 
   useEffect(() => {
     (async () => {
@@ -29,14 +42,35 @@ const DetailCourse = () => {
     })();
   }, [courseId]);
 
-  const handleClick= async ()=> {
-    if(auth=== true) {
-     
+  const handleClick = async () => {
+    const accessToken = await AsyncStorage.getItem("accessToken");
+    if (auth === true) {
+      const isPurchased = user.courses.find(
+        (item) => item._id === courseId
+      );
+      if (isPurchased) {
+        return navigation.navigate("CourseAccess", { courseId });
+      }
+      try {
+        const stripe = await stripePromise;
+        const response = await axios(API_URL + "/payment-app/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + accessToken,
+          },
+          data: { amount: data?.price * 100, name: data?.name },
+        });
+        const session = await response.data;
+
+        navigation.navigate("Payment", {paymentLink: session.session.url, courseId})
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      navigation.navigate("Login", { from: "DetailCourse", courseId });
     }
-    else {
-      navigation.navigate("Login", {from: "DetailCourse", courseId})
-    }
-  }
+  };
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "white" }}>
@@ -181,11 +215,10 @@ const DetailCourse = () => {
               {data?.ratings?.toFixed(1)} Course Rating ·{" "}
               {data?.reviews?.length} Reviews
             </Text>
-            
           </View>
           {data?.reviews?.map((item, key) => (
-              <ItemReview key={key} {...item} />
-            ))}
+            <ItemReview key={key} {...item} />
+          ))}
         </View>
       </View>
     </ScrollView>

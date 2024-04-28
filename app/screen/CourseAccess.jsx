@@ -1,7 +1,9 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import {
+  Dimensions,
   Image,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableHighlight,
   View,
@@ -17,34 +19,41 @@ import Reviews from "../subscreen/course_access/Reviews";
 import Chatbots from "../subscreen/course_access/Chatbots";
 import Scripts from "../subscreen/course_access/Scripts";
 import get_detail_course from "../api/get/get_detail_course";
+import AskAi from "../subscreen/course_access/AskAi";
+
+import {Video, ResizeMode } from "expo-av";
 const Tab = createMaterialTopTabNavigator();
 
 export const CourseAccessContext = createContext();
 const CourseAccess = () => {
+  const videoRef = useRef(null);
+  const [status, setStatus] = React.useState({});
   const [currentPage, setCurrentPage] = useState(0);
-  const [change, setChange]= useState(false)
+  const [change, setChange] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
   const { courseId } = route.params;
   const [courseContent, setCourseContent] = useState();
   const [course, setCourse] = useState();
   const [dataCurrent, setDataCurrent] = useState();
-  useEffect(()=> {
-    (async ()=> {
+  const video = React.useRef(null);
+  useEffect(() => {
+    (async () => {
       try {
         const result = await get_detail_course(courseId);
         setCourse(result);
       } catch (error) {
         console.log(error);
       }
-    })()
-  }, [change])
+    })();
+  }, [change]);
   useEffect(() => {
     (async () => {
       try {
         const result = await get_course_content(courseId);
         setCourseContent(result.content);
         setDataCurrent(result.content[currentPage]);
+        console.log(result?.content[currentPage]);
       } catch (error) {
         console.log(error);
       }
@@ -57,15 +66,14 @@ const CourseAccess = () => {
         return;
       } else {
         setCurrentPage(parseInt(currentPage) - 1);
-        setDataCurrent(courseContent[parseInt(currentPage) - 1])
+        setDataCurrent(courseContent[parseInt(currentPage) - 1]);
       }
     } else if (state == 1) {
       if (currentPage + 1 >= courseContent.length) {
         return;
       } else {
         setCurrentPage(parseInt(currentPage) + 1);
-        setDataCurrent(courseContent[parseInt(currentPage) + 1])
-
+        setDataCurrent(courseContent[parseInt(currentPage) + 1]);
       }
     }
   };
@@ -76,13 +84,16 @@ const CourseAccess = () => {
       <View style={{ flex: 1, backgroundColor: "white" }}>
         <View style={{ flex: 1, padding: 10 }}>
           <View style={{ width: "100%" }}>
-            <View style={{ width: "100%" }}>
-              <Image
-                style={{
-                  width: "100%",
-                  aspectRatio: 4 / 3,
-                  objectFit: "cover",
+            <View style={{ width: "100%", marginBottom: 12 }}>
+              <Video
+                ref={video}
+                style={styles.video}
+                source={{
+                  uri: dataCurrent?.videoUrl,
                 }}
+                useNativeControls
+                isLooping
+                // onPlaybackStatusUpdate={(status) => setStatus(() => status)}
               />
             </View>
           </View>
@@ -165,7 +176,12 @@ const CourseAccess = () => {
             </Text>
           </View>
           <View style={{ width: "100%", flex: 1 }}>
-            <Tab.Navigator>
+            <Tab.Navigator
+              screenOptions={{
+                tabBarScrollEnabled: true,
+                tabBarLabelStyle: { width: "100%", height: 50 },
+              }}
+            >
               <Tab.Screen
                 name="Overview"
                 component={Overview}
@@ -190,6 +206,12 @@ const CourseAccess = () => {
                 options={{ title: "Reviews" }}
                 initialParams={{ courseId, currentPage, dataCurrent }}
               />
+              <Tab.Screen
+                name="Askai"
+                component={AskAi}
+                options={{ title: "Ask AI" }}
+                initialParams={{ courseId, currentPage, dataCurrent }}
+              />
               {/* <Tab.Screen
               name="Chatbots"
               component={Chatbots}
@@ -207,5 +229,23 @@ const CourseAccess = () => {
     </CourseAccessContext.Provider>
   );
 };
+
+// Later on in your styles..
+var styles = StyleSheet.create({
+  backgroundVideo: {
+    width: Dimensions.get("window").width,
+    aspectRatio: 4 / 3,
+  },
+  video: {
+    alignSelf: 'center',
+    width: "100%",
+    height: 200,
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default CourseAccess;

@@ -12,12 +12,15 @@ import { AppContext } from "../../../App";
 import { CourseAccessContext } from "../../screen/CourseAccess";
 import add_review from "../../api/put/add_review";
 import { useRoute } from "@react-navigation/native";
-
+import Stars from "react-native-stars";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { StyleSheet } from "react-native";
 const Reviews = () => {
-    const route= useRoute()
-    const {courseId }= route.params
+  const route = useRoute();
+  const { courseId } = route.params;
   const { user } = useContext(AppContext);
-  const { dataCurrent, course } = useContext(CourseAccessContext);
+  const [review, setReview]= useState()
+  const { dataCurrent, course, setChange } = useContext(CourseAccessContext);
   const [rating, setRating] = useState(0);
   const handleRating = (rating) => {
     setRating(rating);
@@ -29,12 +32,17 @@ const Reviews = () => {
 
   const handleReview = async () => {
     try {
-      const result = await add_review({
-        // answer,
-        courseId,
-        contentId: dataCurrent?._id,
-        // questionId: item?._id,
-      });
+      const result = await add_review(
+        {
+          // answer,
+          courseId,
+          contentId: dataCurrent?._id,
+          rating: rating,
+          review
+          // questionId: item?._id,
+        },
+        courseId
+      );
       setChange((prev) => !prev);
       setAnswer("");
     } catch (error) {
@@ -101,6 +109,8 @@ const Reviews = () => {
               </View>
               <TextInput
                 placeholder="Write your review"
+                value={review}
+                onChangeText={setReview}
                 multiline={true}
                 style={{
                   width: "100%",
@@ -162,11 +172,32 @@ const Reviews = () => {
                     {item?.user?.name}
                   </Text>
                   <View style={{ marginTop: 4 }}>
-                    <Rating
+                    <Stars
+                      default={item?.rating}
                       count={5}
-                      defaultRating={5}
-                      imageSize={20}
-                      onFinishRating={handleRating}
+                      half={false}
+                      starSize={200}
+                      fullStar={
+                        <Icon
+                          size={24}
+                          name={"star"}
+                          style={[styles.myStarStyle]}
+                        />
+                      }
+                      emptyStar={
+                        <Icon
+                          size={24}
+                          name={"star-outline"}
+                          style={[styles.myStarStyle, styles.myEmptyStarStyle]}
+                        />
+                      }
+                      halfStar={
+                        <Icon
+                          size={24}
+                          name={"star-half"}
+                          style={[styles.myStarStyle]}
+                        />
+                      }
                     />
                     <Text style={{ fontSize: 16, marginTop: 4 }}>
                       {item?.comment}
@@ -183,3 +214,15 @@ const Reviews = () => {
 };
 
 export default Reviews;
+const styles = StyleSheet.create({
+  myStarStyle: {
+    color: "orange",
+    backgroundColor: "transparent",
+    textShadowColor: "black",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
+  },
+  myEmptyStarStyle: {
+    color: "white",
+  },
+});
