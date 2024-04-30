@@ -3,6 +3,7 @@ import express from "express";
 import { authorizeRoles, isAutheticated } from "../middleware/auth";
 import {
   createOrder,
+  createOrderApp,
   getAllOrders,
   newPayment,
   newPaymentApp,
@@ -11,6 +12,7 @@ import {
 const orderRouter = express.Router();
 
 orderRouter.post("/create-order", isAutheticated, createOrder);
+orderRouter.post("/create-order-app", isAutheticated, createOrderApp);
 
 orderRouter.get(
   "/get-orders",
