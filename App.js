@@ -21,11 +21,12 @@ const Stack = createStackNavigator();
 
 export const AppContext = createContext();
 export default function App() {
+  const [change, setChange]= useState(false)
   const [auth, setAuth] = useState(false);
   const [user, setUser] = useState();
   useEffect(() => {
     checkToken();
-  }, []);
+  }, [change]);
   const checkToken = async () => {
     try {
       const userToken = await AsyncStorage.getItem('accessToken');
@@ -42,7 +43,7 @@ export default function App() {
     }
   };
   return (
-    <AppContext.Provider value={{ auth, user, setAuth, setUser }}>
+    <AppContext.Provider value={{ auth, user, setAuth, setUser, change, setChange }}>
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar />
         <NavigationContainer>

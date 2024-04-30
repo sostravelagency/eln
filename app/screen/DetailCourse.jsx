@@ -24,7 +24,6 @@ const stripePromise = loadStripe(
 const DetailCourse = () => {
   const navigation = useNavigation();
   const { auth, user } = useContext(AppContext);
-  console.log("user111", user)
   const [data, setData] = useState();
   const params = useRoute().params;
   const courseId = params.courseId;
@@ -43,6 +42,9 @@ const DetailCourse = () => {
   }, [courseId]);
 
   const handleClick = async () => {
+    if(purchase=== true) {
+      navigation.navigate("CourseAccess", {courseId})
+    }
     const accessToken = await AsyncStorage.getItem("accessToken");
     if (auth === true) {
       const isPurchased = user.courses.find(
@@ -107,9 +109,18 @@ const DetailCourse = () => {
               width: "max-content",
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "600", color: "white" }}>
-              Buy now {data?.price}$
-            </Text>
+            {
+              purchase!== true && 
+              <Text style={{ fontSize: 16, fontWeight: "600", color: "white" }}>
+                Buy now {data?.price}$
+              </Text>
+            }
+            {
+              purchase=== true && 
+              <Text style={{ fontSize: 16, fontWeight: "600", color: "white" }}>
+                Enroll course
+              </Text>
+            }
           </TouchableHighlight>
         </View>
         <View style={{ alignItems: "baseline", marginBottom: 12 }}>

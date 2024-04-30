@@ -39,8 +39,8 @@ const AskAI = () => {
     return (
         <View style={styles.chatContainer}>
             <View style={styles.chatHeader}>
-                <Button title="Tạo cuộc trò chuyện mới" onPress={handleNewConversation} />
-                <Text>Cuộc trò chuyện số: {currentConversation}</Text>
+                <Button title="create new coversation" onPress={handleNewConversation} />
+                <Text>Number Chat: {currentConversation}</Text>
             </View>
             <ScrollView style={styles.chatMessages}>
                 {messages.map((message, index) => (
@@ -48,17 +48,17 @@ const AskAI = () => {
                         <Text>{message.text}</Text>
                     </View>
                 ))}
-                {isLoading && <Text style={styles.loading}>Đang tải...</Text>}
+                {isLoading && <Text style={styles.loading}>Loading...</Text>}
             </ScrollView>
             <View style={styles.chatInput}>
                 <TextInput
                     style={styles.input}
                     value={inputValue}
                     onChangeText={handleInputChange}
-                    placeholder="Nhập tin nhắn..."
+                    placeholder="Input messenge.."
                 />
                 <Button
-                    title={isLoading ? 'Đang tải...' : 'Gửi'}
+                    title={isLoading ? 'Loading...' : 'Send'}
                     onPress={handleSendMessage}
                     disabled={isLoading}
                 />

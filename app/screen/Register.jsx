@@ -76,7 +76,7 @@ const RegisterScreen = () => {
         secureTextEntry
       />
       <Button title="Register" onPress={handleRegister} />
-      <Text style={styles.loginText} onPress={() => navigation.navigate('Login')}>
+      <Text style={styles.loginText} onPress={() => navigation.navigate('LoginTab')}>
         Already have an account? Login now!
       </Text>
     </View>

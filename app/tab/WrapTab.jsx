@@ -10,6 +10,7 @@ import FAQ from "../screen/FAQ";
 import { AppContext } from "../../App";
 import Me from "../screen/Me";
 import { Text } from "react-native";
+import LoginTabScreen from "../screen/LoginTab";
 
 const Tab = createBottomTabNavigator();
 
@@ -41,6 +42,11 @@ const WrapTab = () => {
             iconName = focused ? "user" : "user";
             color = focused ? "#2e89ff" : "#555";
           }
+          else if (route.name === "LoginTab") {
+            iconName = focused ? "user" : "user";
+            color = focused ? "#2e89ff" : "#555";
+          }
+          
 
           if (route.name === "Policy" || route.name === "FAQ") {
             return <MaterialIcons name={iconName} size={size} color={color} />;
@@ -62,6 +68,9 @@ const WrapTab = () => {
             label = "FAQ";
           } else if (route.name === "Me") {
             label = "Me";
+          }
+          else if (route.name === "LoginTab") {
+            label = "Login";
           }
 
           return <Text style={{ color, fontSize: 12 }}>{label}</Text>;
@@ -91,6 +100,9 @@ const WrapTab = () => {
       <Tab.Screen name="FAQ" component={FAQ} options={{ headerShown: false }} />
       {auth === true && (
         <Tab.Screen name="Me" component={Me} options={{ headerShown: false }} />
+      )}
+      {auth === false && (
+        <Tab.Screen name="LoginTab" component={LoginTabScreen} options={{ headerShown: false }} />
       )}
     </Tab.Navigator>
   );
